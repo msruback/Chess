@@ -12,8 +12,8 @@ app.use(bodyParser.urlencoded({
 }));
 app.get('/register', function(req, res){
     console.log('registering user');
-    var toAdd='{"username":"'+req["username"]+'",\n"password":"'+req["password"]+'"\n},\n";
-    fs.readFile('user.JSON','utf8', function(err,data){
+    var toAdd='{"username":"'+req["username"]+'",\n"password":"'+req["password"]+'"\n},\n"';
+    fs.readFile('user.json','utf8', function(err,data){
         if(err){
             return console.log(err);
         }
@@ -27,8 +27,8 @@ app.get('/register', function(req, res){
         for(var i=0;i<data.length-3;i++){
             resultString+=data.charAt(i);
         }
-        resultString+=toAdd+']'
-        fs.writeFile('users.JSON',resultString,function(err){
+        resultString+=toAdd+']';
+        fs.writeFile('users.json',resultString,function(err){
             if(err){
                 return console.log(err);
 				res.end('{"success":false}');
@@ -39,7 +39,7 @@ app.get('/register', function(req, res){
 });
 app.get('/newgame', function(req,res){
 	var token = '';
-	fs.readfile('user.JSON','utf8',function(err, data){
+	fs.readFile('user.json','utf8',function(err, data){
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-1;i++){
 			if(json[i].username==req["username"]){
@@ -48,7 +48,7 @@ app.get('/newgame', function(req,res){
 					for(var i=0;i<20;i++){
 						token+=Math.floor(Math.random()*10);
 					}
-					fs.readfile('currentGames.JSON','utf8',function(err,data){
+					fs.readFile('currentGames.json','utf8',function(err,data){
 						json = JSON.parse(data);
 						if(json[json.length-1].black==""){
 							json[json.length-1].black=token;
@@ -90,7 +90,7 @@ app.get('/newgame', function(req,res){
 	});
 });
 app.get('/wait', function(req, res){
-	fs.readfile('currentGames.JSON','utf8',function(err,data){
+	fs.readFile('currentGames.json','utf8',function(err,data){
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-1;i++){
 			if(json[i].black==req["token"]&&json[i].currentplayer=="black"){
@@ -104,13 +104,13 @@ app.get('/wait', function(req, res){
 	});
 });
 app.get('/move',function(req,res){
-	fs.readfile('currentGames.JSON','utf8',function(err,data){
+	fs.readFile('currentGames.json','utf8',function(err,data){
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-1;i++){
 			if(json[i].black==req["token"]&&json[i].currentplayer=="black"){
 				json[i].chessboard = req["chess"];
 				json[i].currentplayer = "white";
-				fs.writeFile('users.JSON',json.stringify(),function(err){
+				fs.writeFile('users.json',json.stringify(),function(err){
 		            if(err){
 		                return console.log(err);
 						res.end('{"success":false}');
@@ -120,7 +120,7 @@ app.get('/move',function(req,res){
 			}else if(json[i].white==req["token"]&&json[i].currentplayer=="white"){
 				json[i].chessboard = req["chess"];
 				json[i].currentplayer = "black"
-				fs.writeFile('users.JSON',json.stringify(),function(err){
+				fs.writeFile('users.json',json.stringify(),function(err){
 		            if(err){
 		                return console.log(err);
 						res.end('{"success":false}');
