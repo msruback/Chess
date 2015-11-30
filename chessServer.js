@@ -20,7 +20,7 @@ app.get('/register', function(req, res){
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-1;i++){
 			if(json[i].username==req["username"]){
-				res.end('{"success":false,"reason","username taken"}');
+				res.end('{"success":false,"reason":"username taken"}');
 			}
 		}
         var resultString='';
@@ -37,7 +37,8 @@ app.get('/register', function(req, res){
         });
     });
 });
-app.get('/login', function(req, res){
+app.get('/newgame', function(req,res){
+	var token = '';
 	fs.readfile('user.JSON','utf8',function(err, data){
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-1;i++){
@@ -47,43 +48,44 @@ app.get('/login', function(req, res){
 					for(var i=0;i<20;i++){
 						token+=Math.floor(Math.random()*10);
 					}
-					res.end('{"success":true,"token":"'+token+'"}');
+					fs.readfile('currentGames.JSON','utf8',function(err,data){
+						json = JSON.parse(data);
+						if(json[json.length-1].black==""){
+							json[json.length-1].black=token;
+							json[json.length-1].currentplayer='white';
+							json[json.length-1].chessboard='{'
+							'"1":["WR","WN","WB","WQ","WK","WB","WN","WR"],'+
+							'"2":["WP","WP","WP","WP","WP","WP","WP","WP"],'+
+							'"3":["","","","","","","",""],'+
+							'"4":["","","","","","","",""],'+
+							'"5":["","","","","","","",""],'+
+							'"6":["","","","","","","",""],'+
+							'"7":["BP","BP","BP","BP","BP","BP","BP","BP"],'+
+							'"8":["BR","BN","BB","BQ","BK","BB","BN","BR"]}';
+							fs.writeFile('users.JSON',json.stringify(),function(err){
+					            if(err){
+					                return console.log(err);
+									res.end('{"success":false}');
+					            }
+								res.end('{"success":true,"chess":"'+json[json.length-1].chessboard.stringify()+'","token":"'+token+'"}');
+							});
+						}else{
+							json.push('{"current":"black","white":"'+token+'","black":"","chessboard":""}');
+							fs.writeFile('users.JSON',json.stringify(),function(err){
+					            if(err){
+					                return console.log(err);
+									res.end('{"success":false}');
+					            }
+								res.end('{"success":true,"chess":"wait","token":"'+token+'"}');
+							});
+						}
+					});
+				}else{
+					res.end('{"success":false,"error":"incorrect password"');
 				}
+			}else{
+				res.end('{"success":false,"error":"incorrect username"');
 			}
-		}
-	});
-});
-app.get('/newgame', function(req,res){
-	fs.readfile('currentGames.JSON','utf8',function(err,data){
-		var json = JSON.parse(data);
-		if(json[json.length-1].black==""){
-			json[json.length-1].black=req["token"];
-			json[json.length-1].currentplayer='white';
-			json[json.length-1].chessboard='{'
-			'"1":["WR","WN","WB","WQ","WK","WB","WN","WR"],'+
-			'"2":["WP","WP","WP","WP","WP","WP","WP","WP"],'+
-			'"3":["","","","","","","",""],'+
-			'"4":["","","","","","","",""],'+
-			'"5":["","","","","","","",""],'+
-			'"6":["","","","","","","",""],'+
-			'"7":["BP","BP","BP","BP","BP","BP","BP","BP"],'+
-			'"8":["BR","BN","BB","BQ","BK","BB","BN","BR"]}';
-			fs.writeFile('users.JSON',json.stringify(),function(err){
-	            if(err){
-	                return console.log(err);
-					res.end('{"success":false}');
-	            }
-				res.end('{"success":true,"chess":'+json[json.length-1].chessboard+'}');
-			});
-		}else{
-			json.push('{"current":"black","white":"'+req["token"]+'","black":"","chessboard":""}');
-			fs.writeFile('users.JSON',json.stringify(),function(err){
-	            if(err){
-	                return console.log(err);
-					res.end('{"success":false}');
-	            }
-				res.end('{"success":true,"chess":"wait"}');
-			});
 		}
 	});
 });
@@ -92,9 +94,9 @@ app.get('/wait', function(req, res){
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-1;i++){
 			if(json[i].black==req["token"]&&json[i].currentplayer=="black"){
-				res.end('{"waitDone":true}');
+				res.end('{"waitDone":true, "chess":"'+json[i].chessboard.stringify()+'"}');
 			}else if(json[i].white==req["token"]&&json[i].currentplayer=='white'){
-					res.end('{"waitDone":true}');
+					res.end('{"waitDone":true, "chess":"'+json[i].chessboard.stringify()+'"}');
 			}else{
 					res.end('{"waitDone":false}');
 			}
