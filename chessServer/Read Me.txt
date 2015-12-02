@@ -1,0 +1,20 @@
+Current Supported Requests
+Register:  	localhost:3000/register?username=$username&password=$password
+	Registers provided username and password
+	Returns "success" as true or false, and if false provides an "error" message
+New Game:  	localhost:3000/newgame?username=$username&password=$password
+	Creates a token for the user, and either adds them to a open game, or creates one and adds them to it
+	Returns "chessboard", "token", and "color". If white, wait for another player to join.
+Wait:		localhost:3000/wait?token=$token
+	Returns whether or not it is the requesting players turn in "waitDone"
+Move:		localhost:3000/move?token=$token&chessboard=$chessboard
+	Updates stored chessboard with provided one
+	Returns "success" as true or false, and if false provides an "error" message
+Planned Requests
+Web:		localhost:3000
+	Will provide a html page that will allow people to play chess from there
+Add Stat:	localhost:3000/addStat?username=$username&password=$password&statName=$statName
+	Will increase user stat by one
+	Returns "success" as true or false, and if false provides an "error" message
+
+	
