@@ -2,7 +2,12 @@ var http = require('http'),
     express = require('express'),
     bodyParser = require('body-parser');
 
+var path = require('path');
+
 var app = express();
+
+var userPath = path.join(__dirname,'user.txt');
+var gamePath = path.join(__dirname,'currentGame.txt');
 
 fs = require('fs');
 
@@ -12,23 +17,21 @@ app.use(bodyParser.urlencoded({
 }));
 app.get('/register', function(req, res){
     console.log('registering user');
-    var toAdd='{"username":"'+req["username"]+'",\n"password":"'+req["password"]+'"\n},\n"';
-    fs.readFile('user.json','utf8', function(err,data){
-        if(err){
+    fs.readFile(userPath,'utf8', function(err,data){
+        var username = req.query['username'];
+		var password = req.query['password'];
+		if(err){
             return console.log(err);
+			res.end('{"success":false,"error":"server error"}');
         }
 		var json = JSON.parse(data);
-		for(var i=0;i<json.length-1;i++){
-			if(json[i].username==req["username"]){
+		for(var i=0;i<json.users.length;i++){
+			if(json.users[i].username==username){
 				res.end('{"success":false,"error":"username taken"}');
 			}
 		}
-        var resultString='';
-        for(var i=0;i<data.length-3;i++){
-            resultString+=data.charAt(i);
-        }
-        resultString+=toAdd+']';
-        fs.writeFile('users.json',resultString,function(err){
+		json.users.push({"username":username,"password":password});
+        fs.writeFile(userPath,JSON.stringify(json),function(err){
             if(err){
                 return console.log(err);
 				res.end('{"success":false, "error":"server error"}');
@@ -39,20 +42,26 @@ app.get('/register', function(req, res){
 });
 app.get('/newgame', function(req,res){
 	var token = '';
-	fs.readFile('user.json','utf8',function(err, data){
+	fs.readFile(userPath,'utf8',function(err, data){
+		var username = req.query['username'];
+		var password = req.query['password'];
+		if(err){
+            return console.log(err);
+			res.end('{"success":false,"error":"server error"}');
+        }
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-1;i++){
-			if(json[i].username==req["username"]&&json[i].password==req["password"]){
+			if(json[i].username==username&&json[i].password==password){
 					var token = '';
 					for(var i=0;i<20;i++){
 						token+=Math.floor(Math.random()*10);
 					}
-					fs.readFile('currentGames.json','utf8',function(err,data){
+					fs.readFile(gamePath,'utf8',function(err,data){
 						json = JSON.parse(data);
 						if(json[json.length-1].black==""){
 							json[json.length-1].black=token;
 							json[json.length-1].currentPlayer='white';
-							fs.writeFile('users.JSON',json.stringify(),function(err){
+							fs.writeFile(userPath,JSON.stringify(json),function(err){
 					            if(err){
 					                return console.log(err);
 									res.end('{"success":false}');
@@ -69,7 +78,7 @@ app.get('/newgame', function(req,res){
 							'"6":["","","","","","","",""],'+
 							'"7":["BP","BP","BP","BP","BP","BP","BP","BP"],'+
 							'"8":["BR","BN","BB","BQ","BK","BB","BN","BR"]}"}');
-							fs.writeFile('currentGames.json',json.stringify(),function(err){
+							fs.writeFile(gamePath,JSON.stringify(json),function(err){
 					            if(err){
 					                return console.log(err);
 									res.end('{"success":false,"error":"server error"}');
@@ -84,25 +93,30 @@ app.get('/newgame', function(req,res){
 	});
 });
 app.get('/wait', function(req, res){
-	fs.readFile('currentGames.json','utf8',function(err,data){
+	fs.readFile(gamePath,'utf8',function(err,data){
+		var token = req.query['token'];
+		if(err){
+            return console.log(err);
+			res.end('{"success":false,"error":"server error"}');
+        }
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-1;i++){
-			if(json[i].black==req["token"]&&json[i].currentPlayer=="black"){
+			if(json[i].black==token&&json[i].currentPlayer=="black"){
 				res.end('{"waitDone":true, "chess":"'+json[i].chessboard.stringify()+'"}');
-			}else if(json[i].white==req["token"]&&json[i].currentPlayer=='white'){
+			}else if(json[i].white==token&&json[i].currentPlayer=='white'){
 					res.end('{"waitDone":true, "chess":"'+json[i].chessboard.stringify()+'"}');
-			}else if((json[i].black==req["token"]||json[i].white==req["token"])&&json[i].currentPlayer=="win"){
+			}else if((json[i].black==token||json[i].white==token)&&json[i].currentPlayer=="win"){
 					json.splice(i,1);
-					fs.writeFile('currentGames.json',json.stringify(),function(err){
+					fs.writeFile(gamePath,JSON.stringify(json),function(err){
 			            if(err){
 			                return console.log(err);
 							res.end('{"waitDone":false}');
 			            }
 						res.end('{"waitDone":true,"chessboard":"lose"}');
 					});
-			}else if((json[i].black==req["token"]||json[i].white==req["token"])&&json[i].currentPlayer=="draw"){
+			}else if((json[i].black==token||json[i].white==token)&&json[i].currentPlayer=="draw"){
 					json.splice(i,1);
-					fs.writeFile('currentGames.json',json.stringify(),function(err){
+					fs.writeFile(gamePath,JSON.stringify(json),function(err){
 			            if(err){
 			                return console.log(err);
 							res.end('{"waitDone":false}');
@@ -115,11 +129,17 @@ app.get('/wait', function(req, res){
 	});
 });
 app.get('/move',function(req,res){
-	fs.readFile('currentGames.json','utf8',function(err,data){
+	fs.readFile(gamePath,'utf8',function(err,data){
+		var token = req.query['token'];
+		var chessboard = req.query['chessboard'];
+		if(err){
+            return console.log(err);
+			res.end('{"success":false,"error":"server error"}');
+        }
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-1;i++){
-			if(json[i].black==req["token"]&&json[i].currentPlayer=="black"){
-				json[i].chessboard = req["chessboard"];
+			if(json[i].black==token&&json[i].currentPlayer=="black"){
+				json[i].chessboard = chessboard
 				json[i].currentplayer = "white";
 				fs.writeFile('users.json',json.stringify(),function(err){
 		            if(err){
@@ -128,10 +148,10 @@ app.get('/move',function(req,res){
 		            }
 					res.end('{"success":true}');
 				});
-			}else if(json[i].white==req["token"]&&json[i].currentPlayer=="white"){
-				json[i].chessboard = req["chessboard"];
+			}else if(json[i].white==token&&json[i].currentPlayer=="white"){
+				json[i].chessboard = chessboard
 				json[i].currentplayer = "black"
-				fs.writeFile('currentGames.json',json.stringify(),function(err){
+				fs.writeFile(gamePath,JSON.stringify(json),function(err){
 		            if(err){
 		                return console.log(err);
 						res.end('{"success":false,"error":"server error"}');
@@ -144,12 +164,18 @@ app.get('/move',function(req,res){
 	});
 });
 app.get('/endGame',function(req,res){
-	fs.readFile('currentGames.json','utf8',function(err,data){
+	fs.readFile(gamePath,'utf8',function(err,data){
+		var token = req.query['token'];
+		var type = req.query['type'];
+		if(err){
+            return console.log(err);
+			res.end('{"success":false,"error":"server error"}');
+        }
 		var json = JSON.parse(data);
 		for(var i=0;i<json.length-2;i++){
-			if((json[i].black==req["token"]&&json[i].currentPlayer=="black")||(json[i].white==req["token"]&&json[i].currentPlayer=="white"){
-				json[i].currentPlayer=req["type"];
-				fs.writeFile('currentGames.json',json.stringify(),function(err){
+			if((json[i].black==token&&json[i].currentPlayer=="black")||(json[i].white==token&&json[i].currentPlayer=="white")){
+				json[i].currentPlayer=type;
+				fs.writeFile(gamePath,JSON.stringify(json),function(err){
 		            if(err){
 		                return console.log(err);
 						res.end('{"success":false,"error":"server error"}');
