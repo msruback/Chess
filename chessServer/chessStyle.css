@@ -1,0 +1,106 @@
+.black{
+	background-color: #707070;
+	height: 70px;
+	width: 70px;
+}
+.white{
+	background-color: #F0F0F0;
+	height: 70px;
+	width: 70px;
+}
+.blackKing{
+	position:relative;
+	top: 10%;
+	left:13%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) 0 0;
+}
+.blackQueen{
+	position:relative;
+	top: 10%;
+	left:5%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -106px 0;
+}
+.blackRook{
+	position:relative;
+	top: 5%;
+	left:10%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -220px 0;
+}
+.blackBishop{
+	position:relative;
+	top: 5%;
+	left:10%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -330px 0;
+}
+.blackKnight{
+	position:relative;
+	top: 5%;
+	left:10%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -440px 0;
+}
+.blackPawn{
+	position:relative;
+	top: 5%;
+	left: -15px;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -530px 0;
+}
+.whiteKing{
+	position:relative;
+	top: -5px;
+	left:13%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) 0 -82px;
+}
+.whiteQueen{
+	position:relative;
+	top:-5px;
+	left:5%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -106px -82px;
+}
+.whiteRook{
+	position:relative;
+	top: 5%;
+	left:10%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -220px -90px;
+}
+.whiteBishop{
+	position:relative;
+	top: -5px;
+	left:10%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -330px -83px;
+}
+.whiteKnight{
+	position:relative;
+	top: 5%;
+	left:10%;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -440px -90px;
+}
+.whitePawn{
+	position:relative;
+	top: 5%;
+	left: -15px;
+	height: 70px;
+	width: 70px;
+	background: url(chessSet.png) -530px -90px;
+}
