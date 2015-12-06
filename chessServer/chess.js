@@ -2,7 +2,7 @@ var serverURL = 'localhost:3000';
 var token = '';
 var chessboard;
 var files = ["a","b","c","d","e","f","g","h"];
-var color;
+var username,password,chessboard,color;
 var registerNewUser = function(){
 	var username = document.getElementById('username').value;
 	var password = document.getElementById('password').value;
@@ -15,10 +15,12 @@ var registerNewUser = function(){
 	});
 }
 var startNewGame = function(){
-	var username = document.getElementById('username').value;
-	var password = document.getElementById('password').value;
-	$.getJSON(serverURL+'/login?username='+username+'&password='+password,function(json){
+	var tempUsername = document.getElementById('username').value;
+	var tempPassword = document.getElementById('password').value;
+	$.getJSON(serverURL+'/login?username='+tempUsername+'&password='+tempPassword,function(json){
 		if(json.success){
+			username=tempUsername;
+			password=tempPassword;
 			token=json.token;
 			chessboard=JSON.parse('{"a":["wk","wp","","","","","bp","br"],"b":["wn","wp","","","","","bp","bn"],"c":["wb","wp","","","","","","bp","bb"],"d":["wq","wp","","","","","","bp","bq"],"e":["wk","wp","","","","","","bp","bk"],"f":["wb","wp","","","","","","bp","bb"],"g":["wn","wp","","","","","","bp","bn"],"h":["wr","wp","","","","","","bp","br"]}');
 			if(json.color=='black'){
@@ -42,8 +44,10 @@ var wait = function(){
 		$.getJSON(serverURL+'/wait?token='+token,function(json){
 			if(json.waitDone){
 				if(json.chessboard=='lose'){
+					$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=loses',function(json){});
 					document.getElementById('plugin').insertAdjacentHTML('<div>You Lose!<button type=button onclick=reset()>Done</button></div>');
 				}else if(json.chessboard=='draw'){
+					$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=draws',function(json){});
 					document.getElementById('plugin').insertAdjacentHTML('<div>Draw!<button type=button onclick=reset()>Done</button></div>');
 				}else{
 					chessboard = JSON.parse(json.chessboard);
@@ -110,10 +114,12 @@ var movePiece = function(){
 						setSpace(file,rank,color+'p');
 						setSpace(files[files.getIndexOf(file)-1],rank-1,"");
 						moveSuccessful = true;
+						$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
 					}else if(hasPiece(files[files.getIndexOf(file)+1],rank-1,color+'p')){
 						setSpace(file,rank,color+'p');
 						setSpace(files[files.getIndexOf(file)+1],rank-1,"");
 						moveSuccessful = true;
+						$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
 					}
 				}
 			}
@@ -126,6 +132,7 @@ var movePiece = function(){
 					setSpace(file,rank,color+piece.toLowerCase());
 					setSpace(pieceAt[0],pieceAt[1],"");
 					moveSuccessful = true;
+					$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
 				}
 			}
 		}
@@ -140,6 +147,7 @@ var movePiece = function(){
 					setSpace(file,rank,color+piece.toLowerCase());
 					setSpace(pieceAt[0],pieceAt[1],"");
 					moveSuccessful = true;
+					$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
 				}
 		}
 	}else if(move.length==2){
@@ -231,6 +239,7 @@ var movePiece = function(){
 	}
 	if(win){
 		$.getJSON(serverURL+'/endGame?token='+token+'&type=win',function(json){
+			$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=wins',function(json){});
 			document.getElementById('plugin').insertAdjacentHTML('<div>You win!<button type=button onclick=reset()>Done</button></div>');
 		});
 	}else if(moveSuccess){
