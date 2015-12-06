@@ -38,8 +38,13 @@ var startNewGame = function(){
 	});
 }
 var wait = function(){
-	setInterval(function(){
-		$.getJSON(serverURL+'/wait?token='+token);
+	var waitingLoop = setInterval(function(){
+		$.getJSON(serverURL+'/wait?token='+token,function(json){
+			if(json.waitDone){
+				chessboard = JSON.parse(json.chessboard);
+				clearInterval(waitingLoop);
+			}
+		});
 	},1000);
 }
 var movePiece = function(){
@@ -220,6 +225,14 @@ var movePiece = function(){
 	if(moveSuccess){
 		document.getElementById('move').setAttribute('value','Waiting for other player');
 		updateBoard();
+		$.getJSON(serverURL+'/move?token='+token+'&chessboard='+JSON.stringify(chessboard),function(json){
+			if(json.success){
+				wait();
+				document.getElementById('move').setAttribute('disabled',false);
+				document.getElementById('move').setAttribute('value','');
+				document.getElementById('moveButton').setAttribute('disabled',false);
+			}
+		});
 	}else{
 		document.getElementById('move').setAttribute('disabled',false);
 		document.getElementById('move').setAttribute('value','Incorrect Command');
@@ -580,6 +593,59 @@ var setSpace = function(file,rank,toSet){
 			break;
 	}
 }
+var jsonTranslate = function(piece){
+	switch(piece){
+		case 'wp':
+			return "<div class=whitePawn></div>";
+			break;
+		case 'wr':
+			return "<div class=whiteRook></div>";
+			break;
+		case 'wn':
+			return "<div class=whiteKnight></div>";
+			break;
+		case 'wb':
+			return "<div class=whiteBishop></div>";
+			break;
+		case 'wq':
+			return "<div class=whiteQueen></div>";
+			break;
+		case 'wk':
+			return "<div class=whiteKing></div>";
+			break;
+		case 'bp':
+			return "<div class=blackPawn></div>";
+			break;
+		case 'br':
+			return "<div class=blackRook></div>";
+			break;
+		case 'bn':
+			return "<div class=blackKnight></div>";
+			break;
+		case 'bb':
+			return "<div class=blackBishop></div>";
+			break;
+		case 'bq':
+			return "<div class=blackQueen></div>";
+			break;
+		case 'bk':
+			return "<div class=blackKing></div>";
+			break;
+		case '':
+			return "";
+			break;
+	}
+}
 var updateBoard = function(){
-	
+	var numbers = ['one','two','three','four','five','six','seven','eight'];
+	for(var i=0;i<8;i++){
+		document.querySelector('#a > .'+numbers[i]).innerHTML(jsonTranslate(chessboard.a[i]));
+		document.querySelector('#b > .'+numbers[i]).innerHTML(jsonTranslate(chessboard.b[i]));
+		document.querySelector('#c > .'+numbers[i]).innerHTML(jsonTranslate(chessboard.c[i]));
+		document.querySelector('#d > .'+numbers[i]).innerHTML(jsonTranslate(chessboard.d[i]));
+		document.querySelector('#e > .'+numbers[i]).innerHTML(jsonTranslate(chessboard.e[i]));
+		document.querySelector('#f > .'+numbers[i]).innerHTML(jsonTranslate(chessboard.f[i]));
+		document.querySelector('#g > .'+numbers[i]).innerHTML(jsonTranslate(chessboard.g[i]));
+		document.querySelector('#h > .'+numbers[i]).innerHTML(jsonTranslate(chessboard.h[i]));
+	}
 }

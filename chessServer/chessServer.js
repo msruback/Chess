@@ -11,10 +11,17 @@ var gamePath = path.join(__dirname,'currentGame.txt');
 
 fs = require('fs');
 
+app.use('/',express.static(__dirname));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+app.get('/', function(req,res){
+    res.writeHead(302,{
+        'Location' : 'webChess.html'
+    });
+    res.end();
+})
 app.get('/register', function(req, res){
     console.log('registering user');
     fs.readFile(userPath,'utf8', function(err,data){
@@ -131,7 +138,7 @@ app.get('/wait', function(req, res){
 app.get('/move',function(req,res){
 	fs.readFile(gamePath,'utf8',function(err,data){
 		var token = req.query['token'];
-		var chessboard = req.query['chessboard'];
+		var chessboard = JSON.parse(req.query['chessboard']);
 		if(err){
             return console.log(err);
 			res.end('{"success":false,"error":"server error"}');

@@ -6,7 +6,7 @@ New Game:  	localhost:3000/newGame?username=$username&password=$password
 	Creates a token for the user, and either adds them to a open game, or creates one and adds them to it
 	Returns "token" and "color". If white, wait for another player to join.
 Wait:		localhost:3000/wait?token=$token
-	Returns whether or not it is the requesting players turn in "waitDone"
+	Returns whether or not it is the requesting players turn in "waitDone", as well as current chessboard
 Move:		localhost:3000/move?token=$token&chessboard=$chessboard
 	Updates stored chessboard with provided one
 	Returns "success" as true or false, and if false provides an "error" message
