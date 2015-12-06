@@ -10,6 +10,7 @@ Wait:		localhost:3000/wait?token=$token
 Move:		localhost:3000/move?token=$token&chessboard=$chessboard
 	Updates stored chessboard with provided one
 	Returns "success" as true or false, and if false provides an "error" message
+	Format chessboard as '{"a":["wk","wp","","","","","bp","br"],"b":["wn","wp","","","","","bp","bn"],"c":["wb","wp","","","","","","bp","bb"],"d":["wq","wp","","","","","","bp","bq"],"e":["wk","wp","","","","","","bp","bk"],"f":["wb","wp","","","","","","bp","bb"],"g":["wn","wp","","","","","","bp","bn"],"h":["wr","wp","","","","","","bp","br"]}'
 End Game:	localhost:3000/endGame?token=$token&type=$type
 	Ends the game, type should be win/draw
 	Returns "success" as true or false, and if false provides an "error" message
