@@ -66,7 +66,7 @@ app.get('/newgame', function(req,res){
 					                return console.log(err);
 									res.end('{"success":false}');
 					            }
-								res.end('{"success":true,"chessboard":"'+json[json.length-1].chessboard.stringify()+'","token":"'+token+'","color":"black"}');
+								res.end('{"success":true,"token":"'+token+'","color":"black"}');
 							});
 						}else{
 							json.push('{"currentPlayer":"black","white":"'+token+'","black":"","chessboard":"{'+
@@ -83,7 +83,7 @@ app.get('/newgame', function(req,res){
 					                return console.log(err);
 									res.end('{"success":false,"error":"server error"}');
 					            }
-								res.end('{"success":true,"chessboard":"wait","token":"'+token+'","color":"white"}');
+								res.end('{"success":true,"token":"'+token+'","color":"white"}');
 							});
 						}
 					});
