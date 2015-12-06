@@ -37,7 +37,7 @@ app.get('/register', function(req, res){
 				res.end('{"success":false,"error":"username taken"}');
 			}
 		}
-		json.users.push({"username":username,"password":password});
+		json.users.push({"username":username,"password":password,"stats":{"wins":"0","loses":"0","draws":"0","piecesTaken":"0"}});
         fs.writeFile(userPath,JSON.stringify(json),function(err){
             if(err){
                 return console.log(err);
@@ -194,5 +194,38 @@ app.get('/endGame',function(req,res){
 		res.end('{"success":false,"error":"invalid information"}');
 	});
 });
+app.get('/addStat',function(req,res){
+	var username = req.query['username'];
+	var password = req.query['password'];
+	var stat = req.query['statName'];
+	fs.readFile(userPath,'utf8',function(err,data){
+		if(err){
+			return console.log(err);
+			res.end('{"success":false,"error":"server error"}');
+		}
+		var json = JSON.parse(data);
+		for(var i=0;i<json.users.length;i++){
+			if(json.users[i].username==username&&json.users[i].password==password){
+				if(stat=='wins'){
+					json.users[i].wins++;
+				}else if(stat=='loses'){
+					json.users[i].loses++;
+				}else if(stat=='draws'){
+					json.users[i].draws++;
+				}else if(stat=='piecesTaken'){
+					json.users[i].piecesTaken++;
+				}
+				fs.writeFile(gamePath,JSON.stringify(json),function(err){
+		            if(err){
+		                return console.log(err);
+						res.end('{"success":false,"error":"server error"}');
+		            }
+					res.end('{"success":true}');
+				});
+			}
+		}
+		res.end('{"success":false}');	
+	});
+})
 
 http.createServer(app).listen(3000);

@@ -20,7 +20,7 @@ var startNewGame = function(){
 	$.getJSON(serverURL+'/login?username='+username+'&password='+password,function(json){
 		if(json.success){
 			token=json.token;
-			chessboard=JSON.parse('{"a":["wk","wp","","","","","bp","br"],"b":["wn","wp","","","","","bp","bn"],"c":["wb","wp","","","","","","bp","bb"],"d":["wq","wp","","","","","","bp","bq"],"e":["wk","wp","","","","","","bp","bk"],"f":["wb","wp","","","","","","bp","bb"],"g":["wn","wp","","","","","","bp","bn"],"h":["wr","wp","","","","","","bp","br"]');
+			chessboard=JSON.parse('{"a":["wk","wp","","","","","bp","br"],"b":["wn","wp","","","","","bp","bn"],"c":["wb","wp","","","","","","bp","bb"],"d":["wq","wp","","","","","","bp","bq"],"e":["wk","wp","","","","","","bp","bk"],"f":["wb","wp","","","","","","bp","bb"],"g":["wn","wp","","","","","","bp","bn"],"h":["wr","wp","","","","","","bp","br"]}');
 			if(json.color=='black'){
 				color='b';
 				document.getElementById('plugin').innerHTML('<table><tr id=one><td class=a><div class=black><div class=whiteRook></div></div></td><td class=b><div class=white><div class=whiteKnight></div></div></td><td class=c><div class=black><div class=whiteBishop></div></div></td><td class=d><div class=white><div class=whiteQueen></div></div></td><td class=e><div class=black><div class=whiteKing></div></div></td><td class=f><div class=white><div class=whiteBishop></div></div></td><td class=g><div class=black><div class=whiteKnight></div></div></td><td class=h><div class=white><div class=whiteRook></div></div></td><td><input id=move type=text></td><td><button id=moveButton type="button" onclick=movePiece()>Move</button></td></tr><tr id=two><td class=a><div class=white><div class=whitePawn></div></div></td><td class=b><div class=black><div class=whitePawn></div></div></td><td class=c><div class=white><div class=whitePawn></div></div></td><td class=d><div class=black><div class=whitePawn></div></div></td><td class=e><div class=white><div class=whitePawn></div></div></td><td class=f><div class=black><div class=whitePawn></div></div></td><td class=g><div class=white><div class=whitePawn></div></div></td><td class=h><div class=black><div class=whitePawn></div></div></td></tr><tr id=three><td class=a><div class=black></div></td><td class=b><div class=white></div></td><td class=c><div class=black></div></td><td class=d><div class=white></div></td><td class=e><div class=black></div></td><td class=f><div class=white></div></td><td class=g><div class=black></div></td><td class=h><div class=white></div></td></tr><tr id=four><td class=a><div class=white></div></td><td class=b><div class=black></div></td><td class=c><div class=white></div></td<td class=d><div class=black></div></td><td class=e><div class=white></div></td><td class=f><div class=black></div></td><td class=g><div class=white></div></td><td class=h><div class=black></div></td></tr><tr id=five><td class=a><div class=black></div></td><td class=b><div class=white></div></td><td class=c><div class=black></div></td><td class=d><div class=white></div></td><td class=e><div class=black></div></td><td class=f><div class=white></div></td><td class=g><div class=black></div></td><td class=h><div class=white></div></td></tr><tr id=six><td class=a><div class=white></div></td><td class=b><div class=black></div></td><td class=c><div class=white></div></td><td class=d><div class=black></div></td><td class=e><div class=white></div></td><td class=f><div class=black></div></td><td class=g><div class=white></div></td><td class=h><div class=black></div></td></tr><tr id=seven><td class=a><div class=black><div class=blackPawn></div></div></td><td class=b><div class=white><div class=blackPawn></div></div></td><td class=c><div class=black><div class=blackPawn></div></div></td><td class=d><div class=white><div class=blackPawn></div></div></td><td class=e><div class=black><div class=blackPawn></div></div></td><td class=f><div class=white><div class=blackPawn></div></div></td><td class=g><div class=black><div class=blackPawn></div></div></td><td class=h><div class=white><div class=blackPawn></div></div></td></tr><tr id=eight><td class=a><div class=white><div class=blackRook></div></div></td><td class=b><div class=black><div class=blackKnight></div></div></td><td class=c><div class=white><div class=blackBishop></div></div></td><td class=d><div class=black><div class=blackQueen></div></div></td><td class=e><div class=white><div class=blackKing></div></div></td><td class=f><div class=black><div class=blackBishop></div></div></td><td class=g><div class=white><div class=blackKnight></div></div></td><td class=h><div class=black><div class=blackRook></div></div></td></tr></table>');
@@ -41,7 +41,13 @@ var wait = function(){
 	var waitingLoop = setInterval(function(){
 		$.getJSON(serverURL+'/wait?token='+token,function(json){
 			if(json.waitDone){
-				chessboard = JSON.parse(json.chessboard);
+				if(json.chessboard=='lose'){
+					document.getElementById('plugin').insertAdjacentHTML('<div>You Lose!<button type=button onclick=reset()>Done</button></div>');
+				}else if(json.chessboard=='draw'){
+					document.getElementById('plugin').insertAdjacentHTML('<div>Draw!<button type=button onclick=reset()>Done</button></div>');
+				}else{
+					chessboard = JSON.parse(json.chessboard);
+				}
 				clearInterval(waitingLoop);
 			}
 		});
@@ -53,6 +59,7 @@ var movePiece = function(){
 	document.getElementById('moveButton').setAttribute('disabled',true);
 	var move = document.getElementById('move').value;
 	var moveSuccessful = false;
+	var win = false;
 	var rank,file,modifier,piece;
 	if(move=="0-0-0"||move=="O-O-O"){
 		if(color=='w'){
@@ -222,7 +229,11 @@ var movePiece = function(){
 			}
 		}
 	}
-	if(moveSuccess){
+	if(win){
+		$.getJSON(serverURL+'/endGame?token='+token+'&type=win',function(json){
+			document.getElementById('plugin').insertAdjacentHTML('<div>You win!<button type=button onclick=reset()>Done</button></div>');
+		});
+	}else if(moveSuccess){
 		document.getElementById('move').setAttribute('value','Waiting for other player');
 		updateBoard();
 		$.getJSON(serverURL+'/move?token='+token+'&chessboard='+JSON.stringify(chessboard),function(json){

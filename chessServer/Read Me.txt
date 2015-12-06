@@ -13,10 +13,10 @@ Move:		localhost:3000/move?token=$token&chessboard=$chessboard
 	Format chessboard as '{"a":["wk","wp","","","","","bp","br"],"b":["wn","wp","","","","","bp","bn"],"c":["wb","wp","","","","","","bp","bb"],"d":["wq","wp","","","","","","bp","bq"],"e":["wk","wp","","","","","","bp","bk"],"f":["wb","wp","","","","","","bp","bb"],"g":["wn","wp","","","","","","bp","bn"],"h":["wr","wp","","","","","","bp","br"]}'
 End Game:	localhost:3000/endGame?token=$token&type=$type
 	Ends the game, type should be win/draw
-	Returns "success" as true or false, and if false provides an "error" message
-Planned Requests
+	Returns "success" as true or false, and if false provides an "error" message
 Web:		localhost:3000
 	Will provide a html page that will allow people to play chess from there
 Add Stat:	localhost:3000/addStat?username=$username&password=$password&statName=$statName
 	Will increase user stat by one
 	Returns "success" as true or false, and if false provides an "error" message
+	Possible stats are "wins","loses","draws", and "piecesTaken"
