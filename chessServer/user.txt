@@ -1,1 +1,1 @@
-{"users":[{"username":"elijah","password":"pass","stats":{"wins":"0","losses":"0","draws":"0","piecesTaken":"0"}},{"username":"matt","password":"pass","stats":{"wins":"0","losses":"0","draws":"0","piecesTaken":"0"}}]}
+{"users":[{"username":"matt","password":"pass","stats":{"wins":"0","losses":"0","draws":"0","piecesTaken":"0"}}]}
