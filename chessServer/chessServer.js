@@ -37,7 +37,7 @@ app.get('/register', function(req, res){
 				res.end('{"success":false,"error":"username taken"}');
 			}
 		}
-		json.users.push({"username":username,"password":password,"stats":{"wins":"0","loses":"0","draws":"0","piecesTaken":"0"}});
+		json.users.push({"username":username,"password":password,"stats":{"wins":"0","losses":"0","draws":"0","piecesTaken":"0"}});
         fs.writeFile(userPath,JSON.stringify(json),function(err){
             if(err){
                 return console.log(err);
@@ -208,8 +208,8 @@ app.get('/addStat',function(req,res){
 			if(json.users[i].username==username&&json.users[i].password==password){
 				if(stat=='wins'){
 					json.users[i].wins++;
-				}else if(stat=='loses'){
-					json.users[i].loses++;
+				}else if(stat=='losses'){
+					json.users[i].losses++;
 				}else if(stat=='draws'){
 					json.users[i].draws++;
 				}else if(stat=='piecesTaken'){

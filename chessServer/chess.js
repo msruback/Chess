@@ -14,19 +14,26 @@ var registerNewUser = function(){
 		}
 	});
 }
+//this function will run when the user clicks the "New Game" button, having entered a username and password
 var startNewGame = function(){
 	var tempUsername = document.getElementById('username').value;
 	var tempPassword = document.getElementById('password').value;
-	$.getJSON(serverURL+'/login?username='+tempUsername+'&password='+tempPassword,function(json){
+	//'/newGame' request
+	$.getJSON(serverURL+'/newGame?username='+tempUsername+'&password='+tempPassword,function(json){
 		if(json.success){
+			//stores username and password for stat recording later
 			username=tempUsername;
 			password=tempPassword;
+			//stores token for later game use
 			token=json.token;
+			//sets the json chessboard representation
 			chessboard=JSON.parse('{"a":["wk","wp","","","","","bp","br"],"b":["wn","wp","","","","","bp","bn"],"c":["wb","wp","","","","","","bp","bb"],"d":["wq","wp","","","","","","bp","bq"],"e":["wk","wp","","","","","","bp","bk"],"f":["wb","wp","","","","","","bp","bb"],"g":["wn","wp","","","","","","bp","bn"],"h":["wr","wp","","","","","","bp","br"]}');
 			if(json.color=='black'){
+				//if the color is black, there is already an opponent to play against, and the game begins.
 				color='b';
 				document.getElementById('plugin').innerHTML('<table><tr id=one><td class=a><div class=black><div class=whiteRook></div></div></td><td class=b><div class=white><div class=whiteKnight></div></div></td><td class=c><div class=black><div class=whiteBishop></div></div></td><td class=d><div class=white><div class=whiteQueen></div></div></td><td class=e><div class=black><div class=whiteKing></div></div></td><td class=f><div class=white><div class=whiteBishop></div></div></td><td class=g><div class=black><div class=whiteKnight></div></div></td><td class=h><div class=white><div class=whiteRook></div></div></td><td><input id=move type=text></td><td><button id=moveButton type="button" onclick=movePiece()>Move</button></td></tr><tr id=two><td class=a><div class=white><div class=whitePawn></div></div></td><td class=b><div class=black><div class=whitePawn></div></div></td><td class=c><div class=white><div class=whitePawn></div></div></td><td class=d><div class=black><div class=whitePawn></div></div></td><td class=e><div class=white><div class=whitePawn></div></div></td><td class=f><div class=black><div class=whitePawn></div></div></td><td class=g><div class=white><div class=whitePawn></div></div></td><td class=h><div class=black><div class=whitePawn></div></div></td></tr><tr id=three><td class=a><div class=black></div></td><td class=b><div class=white></div></td><td class=c><div class=black></div></td><td class=d><div class=white></div></td><td class=e><div class=black></div></td><td class=f><div class=white></div></td><td class=g><div class=black></div></td><td class=h><div class=white></div></td></tr><tr id=four><td class=a><div class=white></div></td><td class=b><div class=black></div></td><td class=c><div class=white></div></td<td class=d><div class=black></div></td><td class=e><div class=white></div></td><td class=f><div class=black></div></td><td class=g><div class=white></div></td><td class=h><div class=black></div></td></tr><tr id=five><td class=a><div class=black></div></td><td class=b><div class=white></div></td><td class=c><div class=black></div></td><td class=d><div class=white></div></td><td class=e><div class=black></div></td><td class=f><div class=white></div></td><td class=g><div class=black></div></td><td class=h><div class=white></div></td></tr><tr id=six><td class=a><div class=white></div></td><td class=b><div class=black></div></td><td class=c><div class=white></div></td><td class=d><div class=black></div></td><td class=e><div class=white></div></td><td class=f><div class=black></div></td><td class=g><div class=white></div></td><td class=h><div class=black></div></td></tr><tr id=seven><td class=a><div class=black><div class=blackPawn></div></div></td><td class=b><div class=white><div class=blackPawn></div></div></td><td class=c><div class=black><div class=blackPawn></div></div></td><td class=d><div class=white><div class=blackPawn></div></div></td><td class=e><div class=black><div class=blackPawn></div></div></td><td class=f><div class=white><div class=blackPawn></div></div></td><td class=g><div class=black><div class=blackPawn></div></div></td><td class=h><div class=white><div class=blackPawn></div></div></td></tr><tr id=eight><td class=a><div class=white><div class=blackRook></div></div></td><td class=b><div class=black><div class=blackKnight></div></div></td><td class=c><div class=white><div class=blackBishop></div></div></td><td class=d><div class=black><div class=blackQueen></div></div></td><td class=e><div class=white><div class=blackKing></div></div></td><td class=f><div class=black><div class=blackBishop></div></div></td><td class=g><div class=white><div class=blackKnight></div></div></td><td class=h><div class=black><div class=blackRook></div></div></td></tr></table>');
 			}else{
+				//else an opponent must be found
 				color='w';
 				document.getElementById('plugin').innerHTML('<table><tr id=eight><td class=h><div class=white><div class=blackRook></div></div></td><td class=g><div class=black><div class=blackKnight></div></div></td><td class=f><div class=white><div class=blackBishop></div></div></td><td class=e><div class=black><div class=blackQueen></div></div></td><td class=d><div class=white><div class=blackKing></div></div></td><td class=c><div class=black><div class=blackBishop></div></div></td><td class=b><div class=white><div class=blackKnight></div></div></td><td class=a><div class=black><div class=blackRook></div></div></td><td><input id=move value="Waiting for Opponent" disabled=true type=text></td><td><button id=moveButton disabled=true type="button" onclick=movePiece()>Move</button></td></tr><tr id=seven><td class=h><div class=black><div class=blackPawn></div></div></td><td class=g><div class=white><div class=blackPawn></div></div></td><td class=f><div class=black><div class=blackPawn></div></div></td><td class=e><div class=white><div class=blackPawn></div></div></td><td class=d><div class=black><div class=blackPawn></div></div></td><td class=c><div class=white><div class=blackPawn></div></div></td><td class=b><div class=black><div class=blackPawn></div></div></td><td class=a><div class=white><div class=blackPawn></div></div></td></tr><tr id=six><td class=h><div class=white></div></td><td class=g><div class=black></div></td><td class=f><div class=white></div></td><td class=e><div class=black></div></td><td class=d><div class=white></div></td><td class=c><div class=black></div></td><td class=b><div class=white></div></td><td class=a><div class=black></div></td></tr><tr id=five><td class=h><div class=black></div></td><td class=g><div class=white></div></td><td class=f><div class=black></div></td<td class=e><div class=white></div></td><td class=d><div class=black></div></td><td class=c><div class=white></div></td><td class=b><div class=black></div></td><td class=a><div class=white></div></td></tr><tr id=four><td class=h><div class=white></div></td><td class=g><div class=black></div></td><td class=f><div class=white></div></td><td class=e><div class=black></div></td><td class=d><div class=white></div></td><td class=c><div class=black></div></td><td class=b><div class=white></div></td><td class=a><div class=black></div></td></tr><tr id=three><td class=h><div class=black></div></td><td class=g><div class=white></div></td><td class=f><div class=black></div></td><td class=e><div class=white></div></td><td class=d><div class=black></div></td><td class=c><div class=white></div></td><td class=b><div class=black></div></td><td class=a><div class=white></div></td></tr><tr id=two><td class=h><div class=white><div class=whitePawn></div></div></td><td class=g><div class=black><div class=whitePawn></div></div></td><td class=f><div class=white><div class=whitePawn></div></div></td><td class=e><div class=black><div class=whitePawn></div></div></td><td class=d><div class=white><div class=whitePawn></div></div></td><td class=c><div class=black><div class=whitePawn></div></div></td><td class=b><div class=white><div class=whitePawn></div></div></td><td class=a><div class=black><div class=whitePawn></div></div></td></tr><tr id=one><td class=g><div class=black><div class=whiteRook></div></div></td><td class=g><div class=white><div class=whiteKnight></div></div></td><td class=f><div class=black><div class=whiteBishop></div></div></td><td class=e><div class=white><div class=whiteQueen></div></div></td><td class=d><div class=black><div class=whiteKing></div></div></td><td class=c><div class=white><div class=whiteBishop></div></div></td><td class=b><div class=black><div class=whiteKnight></div></div></td><td class=a><div class=white><div class=whiteRook></div></div></td></tr></table>');
 				wait();
@@ -40,13 +47,17 @@ var startNewGame = function(){
 	});
 }
 var wait = function(){
+	//requests the status of the server every second until the wait is done
 	var waitingLoop = setInterval(function(){
 		$.getJSON(serverURL+'/wait?token='+token,function(json){
 			if(json.waitDone){
+				//if the game is over, as in the player has lost or tied with their opponent, the game ends and the page goes back to it's original state
 				if(json.chessboard=='lose'){
-					$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=loses',function(json){});
+					//record loss
+					$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=losses',function(json){});
 					document.getElementById('plugin').insertAdjacentHTML('<div>You Lose!<button type=button onclick=reset()>Done</button></div>');
 				}else if(json.chessboard=='draw'){
+					//record draw
 					$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=draws',function(json){});
 					document.getElementById('plugin').insertAdjacentHTML('<div>Draw!<button type=button onclick=reset()>Done</button></div>');
 				}else{
@@ -58,13 +69,17 @@ var wait = function(){
 	},1000);
 }
 var movePiece = function(){
+	//disables the move button, will be enabled after either the move is proven incorrect, or the other player's turn is done
 	document.getElementById('move').setAttribute('disabled',true);
 	document.getElementById('move').setAttribute('value','Verifying Move');
 	document.getElementById('moveButton').setAttribute('disabled',true);
 	var move = document.getElementById('move').value;
+	//if the move is successful, then this is set to true
 	var moveSuccessful = false;
+	//if the player takes the opponents king, then this is set to true
 	var win = false;
 	var rank,file,modifier,piece;
+	//handles queen side castling
 	if(move=="0-0-0"||move=="O-O-O"){
 		if(color=='w'){
 			if(hasPiece('e',1,'wk')&&hasPiece('d',1,"")&&hasPiece('c',1,"")&&hasPiece('b',1,"")&&hasPiece('a',1,'wr')){
@@ -83,6 +98,7 @@ var movePiece = function(){
 				moveSuccessful = true;
 			}
 		}
+	//handles king side castling
 	}else if(move=="0-0"||move=="O-O"){
 		if(color=='w'){
 			if(hasPiece('e',1,'wk')&&hasPiece('f',1,"")&&hasPiece('g',1,"")&&hasPiece('h',1,"wr"){
@@ -101,70 +117,103 @@ var movePiece = function(){
 				moveSuccessful = true;
 			}
 		}
+	//handles pawn attacks and attacks where only one of the specified pieces can move there
 	}else if(move.getCharAt(1)=='x'){
 		modifier='';
 		file=move.getCharAt(2);
 		rank=move.getCharAt(3);
+		//if the character at index 0 of move is one of the files in the chessboard, then the attack is being carried out by a pawn in that file
 		for(var i=0;i<=8;i++){
 			if(move.getCharAt(0)==files[i]){
 				modifier=move.getCharAt(0);
 				piece='P';
+				//therefore, there must be a piece the pawn can take, a pawn in that file, which can take the piece, which differs between white and black
 				if(attackPiece(file,rank)){
-					if(hasPiece(files[files.getIndexOf(file)-1],rank-1,color+'p')){
-						setSpace(file,rank,color+'p');
-						setSpace(files[files.getIndexOf(file)-1],rank-1,"");
-						moveSuccessful = true;
-						$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
-					}else if(hasPiece(files[files.getIndexOf(file)+1],rank-1,color+'p')){
-						setSpace(file,rank,color+'p');
-						setSpace(files[files.getIndexOf(file)+1],rank-1,"");
-						moveSuccessful = true;
-						$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
+					if(modifier=files[files.indexOf(file)]){
+						if(color=='w'){
+							if(hasPiece(modifier,rank-1,'wp')){
+								if(hasPiece(file,rank,'bk')){
+									win=true;
+								}
+								setSpace(file,rank,'wp');
+								setSpace(modifier,rank-1,"");
+								moveSuccessful = true;
+								//record a capture
+								$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
+							}
+						}else if(color=='b'){
+							if(hasPiece(modifier,rank+1,'bp')){
+								if(hasPiece(file,rank,'wk')){
+									win=true;
+								}
+								setSpace(file,rank,'bp');
+								setSpace(modifier,rank+1,"");
+								moveSuccessful = true;
+								//record a capture
+								$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
+							}
+						}
 					}
 				}
 			}
 		}
+		//however if the piece isn't a pawn, then the piece is in index 0 of move
 		if(piece!='P'){
 			piece=move.getCharAt(0);
+			//there must be a piece to attack, and a piece of the type specified that can move there
 			if(attackPiece(file,rank)){
 				pieceAt=canMove(file,rank,piece,modifier);
 				if(pieceAt.length>0){
+					if((color=='w'&&hasPiece(file,rank,'bk'))||(color=='b'&&hasPiece(file,rank,'wk'))){
+						win=true;
+					}
 					setSpace(file,rank,color+piece.toLowerCase());
 					setSpace(pieceAt[0],pieceAt[1],"");
 					moveSuccessful = true;
+					//record a capture
 					$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
 				}
 			}
 		}
-			
+	//if there are multiple pieces of the same type that can attack the same piece, a modifier that is either the rank or file of the desired piece will be provided infront of the x
 	}else if(move.getCharAt(2)=='x'){
 		modifier=move.getCharAt(1);
 		file=move.getCharAt(3);
 		rank=move.getCharAt(4);
+		//there must then be a piece to attack, and a piece of the type specified that can move there, in the rank or file specified
 		if(attackPiece(file,rank)){
 			pieceAt=canMove(file,rank,piece,modifier);
 				if(pieceAt.length>0){
+					if((color=='w'&&hasPiece(file,rank,'bk'))||(color=='b'&&hasPiece(file,rank,'wk'))){
+						win=true;
+					}
 					setSpace(file,rank,color+piece.toLowerCase());
 					setSpace(pieceAt[0],pieceAt[1],"");
 					moveSuccessful = true;
+					//record a capture
 					$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=piecesTaken',function(json){});
 				}
 		}
+	//otherwise, a move that has a length of two must be a pawn movement
 	}else if(move.length==2){
 		file=move.getCharAt(0);
 		rank=move.getCharAt(1);
+		//first there must be space for the pawn to move to
 		if(hasPiece(file,rank,"")){
+			//the direction a pawn can move depends on the color
 			if(color=='w'){
 				piece='wp';
+				//if the rank provided is 4, then either a pawn is moving forward one from rank 3, or moving forward 2 from rank 2. The only way a pawn can move forward 2 is if it is moving to rank 4
 				if(rank==4){
-					if(hasPiece(file,rank-1,"")){
-						if(hasPiece(file,rank-2,piece)){
-							setSpace(file,rank,piece);
-							setSpace(file,rank-2,"");
+					if(hasPiece(file,3,"")){
+						if(hasPiece(file,2,piece)){
+							setSpace(file,4,piece);
+							setSpace(file,2,"");
 							moveSuccessful = true;
 						}
 					}
 				}
+				//If the pawn is only moving one space, then there must be a pawn in the space one rank down from the destination
 				if(hasPiece(file,rank-1,piece)){
 					setSpace(file,rank,piece);
 					setSpace(file,rank-1,"");
@@ -172,11 +221,12 @@ var movePiece = function(){
 				}
 			}else if(color=='b'){
 				piece='bp';
+				//if the rank provided is 5, much like white, there must either be a pawn in 6 or 7
 				if(rank==5){
-					if(hasPiece(file,rank+1,"")){
-						if(hasPiece(file,rank+2,piece)){
-							setSpace(file,rank,piece);
-							setSpace(file,rank+2,"");
+					if(hasPiece(file,6,"")){
+						if(hasPiece(file,7,piece)){
+							setSpace(file,5,piece);
+							setSpace(file,7,"");
 							moveSuccessful = true;
 						}
 					}
@@ -188,33 +238,43 @@ var movePiece = function(){
 				}
 			}
 		}
+	//if the move is 3 in length, the possible moves are pawn promotion, or the movement of a piece where it is the only one of it's type that can move there
 	}else if(move.length==3){
+		//pawn promotion is a standard pawn move that ends with the letter of the desired piece
 		if(move.getCharAt(3)=='Q'||move.getCharAt(3)=='N'||move.getCharAt(3)=='B'||move.getCharAt(3)=='R'){
 			if(color=='w'){
+				//pawn promotion is only available for white if the pawn is moving into rank 8
 				if(rank==8){
 					piece='wp';
 					var newPiece='w'+move.getCharAt(3).toLowerCase();
-					if(hasPiece(file,rank-1,piece)){
-						setSpace(file,rank,newPiece);
-						setSpace(file,rank-1,"");
-						moveSuccessful = true;
+					if(hasPiece(file,rank,""){
+						if(hasPiece(file,rank-1,piece)){
+							setSpace(file,rank,newPiece);
+							setSpace(file,rank-1,"");
+							moveSuccessful = true;
+						}
 					}
 				}
 			}else if(color=='b'){
+				//likewise, pawn promotion is only available for black if the pawn is moving into rank 1
 				if(rank==1){
 					piece='bp'
 					var newPiece='b'+move.getCharAt(3).toLowerCase();
-					if(hasPiece(file,rank+1,piece)){
-						setSpace(file,rank,newPiece);
-						setSpace(file,rank+1,"");
-						moveSuccessful = true;
+					if(hasPiece(file,rank,"")){
+						if(hasPiece(file,rank+1,piece)){
+							setSpace(file,rank,newPiece);
+							setSpace(file,rank+1,"");
+							moveSuccessful = true;
+						}
 					}
 				}
 			}
+		//if the move isn't pawn promotion, it is a standard movement
 		}else{
 			modifier="";
 			file=move.getCharAt(1);
 			rank=move.getCharAt(2);
+			//there must be a space where the piece is moving to
 			if(hasPiece(file,rank,"")){
 				pieceAt=canMove(file,rank,piece,modifier);
 				if(pieceAt.length>0){
@@ -224,10 +284,13 @@ var movePiece = function(){
 				}
 			}
 		}
+	//the only other type of move would be of length four, a standard move where multiple pieces of the same type can move to the desired space
 	}else if(move.length==4){
+		//the file or rank of the desired piece must be provided at index 1, as well as the file and rank of the desired space in indeces 2 and 3 respectivly
 		modifier=move.getCharAt(1);
 		file=move.getCharAt(2);
 		rank=move.getCharAt(3);
+		//there must be an empty space, as well as a piece of the specified type in the specified rank or file, that can move to the specified space
 		if(hasPiece(file,rank,"")){
 			pieceAt=canMove(file,rank,piece,modifier);
 			if(pieceAt.length>0){
@@ -237,8 +300,10 @@ var movePiece = function(){
 			}
 		}
 	}
+	//if the player takes the opponents king, win is set to true, and the game is over
 	if(win){
 		$.getJSON(serverURL+'/endGame?token='+token+'&type=win',function(json){
+			//record win
 			$.getJSON(serverURL+'/addStat?username='+username+'&password='+password+'&statName=wins',function(json){});
 			document.getElementById('plugin').insertAdjacentHTML('<div>You win!<button type=button onclick=reset()>Done</button></div>');
 		});

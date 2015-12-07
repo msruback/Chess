@@ -19,4 +19,4 @@ Web:		localhost:3000
 Add Stat:	localhost:3000/addStat?username=$username&password=$password&statName=$statName
 	Will increase user stat by one
 	Returns "success" as true or false, and if false provides an "error" message
-	Possible stats are "wins","loses","draws", and "piecesTaken"
+	Possible stats are "wins","losses","draws", and "piecesTaken"
