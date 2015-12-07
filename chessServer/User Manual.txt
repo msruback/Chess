@@ -1,0 +1,2 @@
+When you open the address of the server, for example, localhost:3000, you should be greeted by a login screen. You must provide your credentials and either register them, or begin a new game.
+While playing, you will move your piece by algebraic chess notation. Some exceptions apply, such as check not being supported. Also, when attacking with a pawn, one must always specify the file the pawn is on.
